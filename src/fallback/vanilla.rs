@@ -413,20 +413,18 @@ impl<'a, Tree: 'a + MerkleTreeTrait> ProofScheme<'a> for FallbackPoSt<'a, Tree> 
                                     pub_params,
                                     challenge_index,
                                 );
-                                let now = Instant::now();
-                                println!("===== prove_all_partitions gen_cached_proof start...");
-                                println!("===== prove_all_partitions challenged_leaf:{},rows_to_discard:{} ,sector_id:{:?}", challenged_leaf, rows_to_discard, sector_id);
+                                println!("===== [{}] prove_all_partitions challenged_leaf:{},rows_to_discard:{} ,sector_id:{:?}", n, challenged_leaf, rows_to_discard, sector_id);
                                 let proof = tree.gen_cached_proof(
                                     challenged_leaf as usize,
                                     Some(rows_to_discard),
                                 );
-                                println!("===== prove_all_partitions gen_cached_proof end duration:{:?}", now.elapsed());
+
                                 match proof {
                                     Ok(proof) => {
-                                        println!("===== prove_all_partitions validate proof");
-                                        println!("======== 1 proof.validate(challenged_leaf as usize):{}", proof.validate(challenged_leaf as usize));
-                                        println!("======== 2 proof.root() == priv_sector.comm_r_last:{}", proof.root() == priv_sector.comm_r_last);
-                                        println!("======== 3 pub_sector.comm_r == <Tree::Hasher as Hasher>::Function::hash2(&priv_sector.comm_c, &priv_sector.comm_r_last):{}", pub_sector.comm_r == <Tree::Hasher as Hasher>::Function::hash2(&priv_sector.comm_c, &priv_sector.comm_r_last));
+                                        println!("===== [{}] prove_all_partitions validate proof", n);
+                                        println!("======== [{}] 1 proof.validate(challenged_leaf as usize):{}", n, proof.validate(challenged_leaf as usize));
+                                        println!("======== [{}] 2 proof.root() == priv_sector.comm_r_last:{}", n, proof.root() == priv_sector.comm_r_last);
+                                        println!("======== [{}] 3 pub_sector.comm_r == <Tree::Hasher as Hasher>::Function::hash2(&priv_sector.comm_c, &priv_sector.comm_r_last):{}", n, pub_sector.comm_r == <Tree::Hasher as Hasher>::Function::hash2(&priv_sector.comm_c, &priv_sector.comm_r_last));
                                         if proof.validate(challenged_leaf as usize)
                                             && proof.root() == priv_sector.comm_r_last
                                             && pub_sector.comm_r
@@ -435,10 +433,10 @@ impl<'a, Tree: 'a + MerkleTreeTrait> ProofScheme<'a> for FallbackPoSt<'a, Tree> 
                                             &priv_sector.comm_r_last,
                                         )
                                         {
-                                            println!("======== validate proof result: true");
+                                            println!("======== [{}] validate proof result: true", n);
                                             inclusion_proofs.push(proof);
                                         } else {
-                                            println!("======== validate proof result: false");
+                                            println!("======== [{}] validate proof result: false", n);
                                             error!("faulty sector: {:?}", sector_id);
                                             faults.insert(sector_id);
                                         }
